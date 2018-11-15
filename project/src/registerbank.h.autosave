@@ -1,0 +1,35 @@
+/*----------------------------------------------------------------------------/
+ * Abraham Steenhoek | class: CPS310 | login: astee529 | BJUID: 160520
+ *
+ * registerbank.h
+ *  Contains the definitions of the methods declared in 'registerbank.h'
+ * --------------------------------------------------------------------------*/
+
+#include "memory.h"
+
+#ifndef REGISTERBANK_H
+#define REGISTERBANK_H
+
+
+class RegisterBank
+{
+    Memory* regs;
+public:
+    RegisterBank();
+    RegisterBank(int num_regs);
+
+    // get the value at r(1-15)
+    uint get(uint reg);
+    // get the value of the CPSR register
+    uint getCPSR();
+
+    // set reg r(1-15) to specific 32-bit value
+    bool set(uint reg, int value);
+    // set CPSR register
+    bool setCPSR(int value);
+
+    void clear() { regs->clear(); }
+    unsigned char *array() { return regs->array(); }
+};
+
+#endif // REGISTERBANK_H

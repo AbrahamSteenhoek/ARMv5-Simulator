@@ -1,0 +1,64 @@
+/*----------------------------------------------------------------------------/
+ * Abraham Steenhoek | class: CPS310 | login: astee529 | BJUID: 160520
+ *
+ * testOperand2.cpp
+ *  - contains the definitions of the constructor and all methods for the testOperand2 class
+ * --------------------------------------------------------------------------*/
+
+#include "testoperand2.h"
+
+testOperand2::testOperand2()
+{
+
+}
+
+void testOperand2::runTests()
+{
+    qInfo() << "testing Operand2 class";
+
+    RegisterBank *regs = new RegisterBank(17);
+    // r1 is Rm for these tests
+    regs->set(1, 0xEFEFEFEF);
+
+
+    // immediate
+    Operand2 *op = new Operand2_Immediate(0x345, false);
+    assert(((Operand2_Immediate*)op)->val() == 0x345);
+    op = new Operand2_Immediate(0x10C, true);
+    assert(((Operand2_Immediate*)op)->val() == 0b0011);
+
+    // regshift immediate
+    // lsl 4
+    op = new Operand2_RegShiftImmediate(0x201, regs);
+    assert(((Operand2_RegShiftImmediate*)op)->val() == 0xFEFEFEF0);
+    // lsr 4
+    op = new Operand2_RegShiftImmediate(0x221, regs);
+    assert(((Operand2_RegShiftImmediate*)op)->val() == 0x0EFEFEFE);
+    // asr 4
+    op = new Operand2_RegShiftImmediate(0x441, regs);
+    assert(((Operand2_RegShiftImmediate*)op)->val() == 0xFFEFEFEF);
+    // ror 4
+    op = new Operand2_RegShiftImmediate(0x461, regs);
+    assert(((Operand2_RegShiftImmediate*)op)->val() == 0xEFEFEFEF);
+
+    // r2 is Rs for
+    regs->set(2, 4);
+
+    // regshift reg
+    // lsl, rs=4
+    op = new Operand2_RegShiftReg(0x211, regs);
+    assert(((Operand2_RegShiftReg*)op)->val() == 0xFEFEFEF0);
+    // lsr, rs = 4
+    op = new Operand2_RegShiftReg(0x231, regs);
+    assert(((Operand2_RegShiftReg*)op)->val() == 0x0EFEFEFE);
+
+    regs->set(2, 8);
+    // asr, rs = 8
+    op = new Operand2_RegShiftReg(0x251, regs);
+    assert(((Operand2_RegShiftReg*)op)->val() == 0xFFEFEFEF);
+    // ror, rs = 8
+    op = new Operand2_RegShiftReg(0x271, regs);
+    assert(((Operand2_RegShiftReg*)op)->val() == 0xEFEFEFEF);
+
+    qInfo() << "Operand2 tests successful." << endl;
+}

@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ArmSim</class>
+ <widget class="QMainWindow" name="ArmSim">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>871</width>
+    <height>794</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>ArmSim</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="images.qrc">
+    <normaloff>:/icons/Untitled.png</normaloff>:/icons/Untitled.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="7" column="0" colspan="3">
+     <widget class="QListWidget" name="listWidget_disassembly">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Lucida Console</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" rowspan="2" colspan="2">
+     <widget class="QLabel" name="label_checksum">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Checksum:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="4">
+     <widget class="QLabel" name="label_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Stack</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="5">
+     <widget class="Line" name="line_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="4">
+     <widget class="QLabel" name="label_flags">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Registers</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="4">
+     <widget class="QTableView" name="tableView_regView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>256</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Lucida Console</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContents</enum>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::SolidLine</enum>
+      </property>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Terminal</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="5">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0" colspan="4">
+     <widget class="QListWidget" name="listWidget_memory">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Lucida Console</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_filename">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>File:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0" colspan="5">
+     <widget class="TerminalTextBrowser" name="textBrowser_terminalView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>224</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Lucida Console</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="4">
+     <widget class="QListWidget" name="listWidget_stack">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>256</width>
+        <height>200</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3" colspan="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images.qrc">
+          <normaloff>:/icons/open_file.png</normaloff>:/icons/open_file.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+O</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_reset">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images.qrc">
+          <normaloff>:/icons/reset.png</normaloff>:/icons/reset.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+R</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_run">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images.qrc">
+          <normaloff>:/icons/run.png</normaloff>:/icons/run.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="shortcut">
+         <string>F5</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_stop">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images.qrc">
+          <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+Q</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_step">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="images.qrc">
+          <normaloff>:/icons/step_into.png</normaloff>:/icons/step_into.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+        <property name="shortcut">
+         <string>F10</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Memory:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="3" colspan="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="checkBox_trace">
+        <property name="font">
+         <font>
+          <family>Segoe UI Semibold</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Trace</string>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+T</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_breakpoint">
+        <property name="font">
+         <font>
+          <family>Segoe UI Semibold</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Breakpoint</string>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+B</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_add_breakpoint">
+        <property name="font">
+         <font>
+          <family>Segoe UI Semibold</family>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Add Breakpoint</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="8" column="1" colspan="3">
+     <widget class="QLineEdit" name="lineEdit_memory">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>20</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" rowspan="2" colspan="2">
+     <widget class="QLabel" name="label_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Disassembly</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="3">
+     <widget class="QLabel" name="label_regs">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Segoe UI Semibold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Flags</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="3">
+     <widget class="QTableView" name="tableView_flagPanel">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>71</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Lucida Console</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="showGrid">
+       <bool>true</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::SolidLine</enum>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>871</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>TerminalTextBrowser</class>
+   <extends>QTextBrowser</extends>
+   <header location="global">terminaltextbrowser.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

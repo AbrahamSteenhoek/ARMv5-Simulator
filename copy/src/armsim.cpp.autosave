@@ -1,0 +1,379 @@
+/*----------------------------------------------------------------------------/
+ * Abraham Steenhoek | class: CPS310 | login: astee529 | BJUID: 160520
+ *
+ * armsim.cpp
+ *  - Contains the method definitions for armsim.h
+ * --------------------------------------------------------------------------*/
+
+
+#include "armsim.h"
+#include "ui_armsim.h"
+
+ArmSim::ArmSim(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::ArmSim)
+{
+    ui->setupUi(this);
+}
+
+ArmSim::ArmSim(Options *opts, QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::ArmSim)
+{
+    ui->setupUi(this);
+
+    // instantiate computer
+    computer = new Computer(opts);
+    // assign direct references too RAM & regs for easier access
+    regs = computer->registers();
+    RAM = computer->memory();
+    computer->setTracingStream(new ofstream);
+
+    // to make sure that the trace file is correctly opened when the GUI is launched since it is checked by default
+    on_checkBox_trace_clicked();
+    setupPanels();
+
+}
+
+ArmSim::~ArmSim()
+{
+    delete ui;
+}
+
+/*
+ * Method: setComputer
+ *  - changes the mainWindow's reference to the computer model, and also changes the direct references to the computer's RAM and registers
+ */
+void ArmSim::setComputer(Computer *com)
+{
+    computer = com;
+    regs = com->registers();
+    RAM = com->memory();
+}
+
+void ArmSim::loadFile(QString filepath)
+{
+    // stop the computer if it's running
+    computer->setRunning(false);
+
+    // extract file info
+    QFileInfo fi(filepath);
+    QString filename = fi.fileName();
+
+    if (!filepath.isEmpty()) {
+        // zero out regs
+        computer->clearMemory();
+        // load new file into memory
+        Loader loader(filepath, computer->memory());
+
+        if (loader.loaded()) {
+            // display the checksum
+            updateChecksum(QString::number(computer->memory()->calcChecksumForRAM()));
+            updateFilename(filename);
+        }
+        else {
+            updateChecksum("");
+            updateFilename("None");
+        }
+    }
+}
+
+void ArmSim::setupPanels()
+{
+    // set up register panel
+    QStandardItemModel *model = new QStandardItemModel(16, 2, this);
+    model->setHorizontalHeaderItem(0, new QStandardItem(QString("Registers")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Value (0x16)")));
+    for(int i = 0; i < 16; i++) {
+    model->setItem(i,0,new QStandardItem(QString("r%1").arg(QString::number(i))));
+    model->setItem(i,1,new QStandardItem(QString("          ")));
+    }
+    ui->tableView_regView->setModel(model);
+    ui->tableView_regView->resizeColumnsToContents();
+
+    //*
+    // set up flag panel
+    QStandardItemModel *model_flags = new QStandardItemModel(1, 4, this);
+    model_flags->setHorizontalHeaderItem(0, new QStandardItem(QString("N")));
+    model_flags->setHorizontalHeaderItem(1, new QStandardItem(QString("Z")));
+    model_flags->setHorizontalHeaderItem(2, new QStandardItem(QString("C")));
+    model_flags->setHorizontalHeaderItem(3, new QStandardItem(QString("F")));
+    model_flags->setItem(0,0, new QStandardItem(QString(" ")));
+    model_flags->setItem(0,1, new QStandardItem(QString(" ")));
+    model_flags->setItem(0,2, new QStandardItem(QString(" ")));
+    model_flags->setItem(0,3, new QStandardItem(QString(" ")));
+    ui->tableView_flagPanel->setModel(model_flags);
+    ui->tableView_flagPanel->resizeColumnsToContents();
+    //*/
+
+    // set up memory panel
+    ui->listWidget_memory->clear();
+}
+
+void ArmSim::updateDisplay()
+{
+    updateRegPanel();
+    updateFlagPanel();
+    updateMemoryPanel();
+    updateDisassemblyPanel();
+    updateStackPanel();
+}
+
+//TODO: put filename and checksum in textboxes for cleaner display
+void ArmSim::updateChecksum(QString checksum)
+{
+    ui->menuBar_checksum->setTitle(checksum);
+}
+
+void ArmSim::updateFilename(QString filename) {
+    ui->menuBar_filename->setTitle(filename);
+}
+
+void ArmSim::updateRegPanel()
+{
+    QStandardItemModel *model = new QStandardItemModel(16, 2, this);
+    model->setHorizontalHeaderItem(0, new QStandardItem(QString("Registers")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Value (0x16)")));
+    for(int i = 0; i < 16; i++) {
+    QString regName = QString("r%1").arg(QString::number(i));
+    int regValue = regs->get(i);
+    QString regValueStr = QString("0x%1").arg(regValue, 8, 16, QChar('0'));
+
+    model->setItem(i,0,new QStandardItem(regName));
+    model->setItem(i,1,new QStandardItem(regValueStr));
+    }
+    ui->tableView_regView->setModel(model);
+}
+
+void ArmSim::updateFlagPanel()
+{
+    QStandardItemModel *model = new QStandardItemModel(1, 4, this);
+    model->setHorizontalHeaderItem(0, new QStandardItem(QString("N")));
+    model->setHorizontalHeaderItem(1, new QStandardItem(QString("Z")));
+    model->setHorizontalHeaderItem(2, new QStandardItem(QString("C")));
+    model->setHorizontalHeaderItem(3, new QStandardItem(QString("F")));
+    uint cpsr = regs->getCPSR();
+    bool n = (cpsr & (1<<31)) != 0;
+    bool z = (cpsr & (1<<30)) != 0;
+    bool c = (cpsr & (1<<29)) != 0;
+    bool f = (cpsr & (1<<28)) != 0;
+    model->setItem(0,0, new QStandardItem(QString::number(n)));
+    model->setItem(0,1, new QStandardItem(QString::number(z)));
+    model->setItem(0,2, new QStandardItem(QString::number(c)));
+    model->setItem(0,3, new QStandardItem(QString::number(f)));
+    ui->tableView_flagPanel->setModel(model);
+}
+
+void ArmSim::updateMemoryPanel()
+{
+    if(ui->lineEdit_memory->text().isEmpty()) {
+
+    }
+    else {
+        ui->listWidget_memory->clear();
+        bool ok;
+        uint addr = ui->lineEdit_memory->text().toUInt(&ok, 16);
+
+        // TODO: try using a tableWidget/tableview for better display?
+        // TODO: account for reading past end of memory
+        for(int i = 0; i < 12; i++) {
+            QString line = QString("0x%1  ").arg(addr, 8, 16, QChar('0'));
+
+            QString hexLine = "";
+
+            QString charLine = "";
+
+            for(uint j = 0; j < 16; j++) {
+                unsigned char byte = computer->memory()->ReadByte(addr++);
+
+                // display 16 bytes per line
+                hexLine.append(QString("%1 ").arg(byte, 2, 16, QChar('0')));
+
+                // display the char value of each byte
+                if(byte == '\n' || byte == 0)
+                    charLine.append(QChar('.'));
+                else
+                    charLine.append(QChar(byte));
+
+            }
+
+            line.append(hexLine);
+            line.append(" " + charLine);
+
+            new QListWidgetItem(line, ui->listWidget_memory);
+        }
+    }
+}
+
+void ArmSim::updateDisassemblyPanel()
+{
+    vector<QString> instrs ={"ldr     r3, [fp, #-8]", "str     r3, [fp, #-12]","mov     r3, #10", "add     fp, sp, #4","ldr     r3, [fp, #-12]","bne     158 <mystart+0x20>",
+                             "ldr     r2, [fp, #-12]","sub     r3, r3, #1","b       174 <mystart+0x3c>","ldr     r3, [pc, #28]","ldr     r3, [fp, #-12]","cmp     r3, #0","str     r3, [fp, #-12]"};
+
+    ui->listWidget_disassembly->clear();
+
+    uint addr = regs->get(15);
+    uint offset = (addr/4 < 3) ? addr/4 : 3;
+    //uint highlight = 0;
+
+    QString line = "";
+
+    // print 3 or less lines before current line at PC
+    for(int i = offset; i > 0; i--) {
+
+        uint curAddr = addr - (i*4);
+        uint curInstr = RAM->ReadWord(curAddr);
+        // append the address
+        line.append(QString("0x%1  ").arg(curAddr, 8, 16, QChar('0')));
+        // append the machine language translation of the instruction at that address
+        line.append(QString("0x%1  ").arg(curInstr, 8, 16, QChar('0')));
+        // add a random asm instruction
+        line.append(instrs.at(std::rand() % instrs.size()));
+
+        // append the line to thedisassembly panel
+        new QListWidgetItem(line, ui->listWidget_disassembly);
+
+        line = "";
+        //offset--;
+        //highlight++;
+    }
+
+    //*
+    // append the address
+    line.append(QString("0x%1  ").arg(addr, 8, 16, QChar('0')));
+    // append the machine language translation of the instruction at that address
+    line.append(QString("0x%1  ").arg(RAM->ReadWord(addr), 8, 16, QChar('0')));
+    // add a random asm instruction
+    line.append(instrs.at(std::rand() % instrs.size()));
+
+    // add row of cur instr and highlight it
+    new QListWidgetItem(line, ui->listWidget_disassembly);
+    ui->listWidget_disassembly->item(offset)->setBackgroundColor(Qt::yellow);
+
+
+    line = "";
+
+    //*/
+
+    offset = 0;
+    while(offset++ < 12 && (RAM->addr_space() > addr + offset*4)) {
+        uint curAddr = addr + offset*4;
+        uint curInstr = RAM->ReadWord(curAddr);
+
+        // append the address
+        line.append(QString("0x%1  ").arg(curAddr, 8, 16, QChar('0')));
+        // append the machine language translation of the instruction at that address
+        line.append(QString("0x%1  ").arg(curInstr, 8, 16, QChar('0')));
+        // add a random asm instruction
+        line.append(instrs.at(std::rand() % instrs.size()));
+        // append the line to thedisassembly panel
+        new QListWidgetItem(line, ui->listWidget_disassembly);
+
+        // reset line
+        line = "";
+    }
+}
+
+void ArmSim::updateStackPanel()
+{
+    ui->listWidget_stack->clear();
+    uint addr = regs->get(13);
+
+
+    for(int i = addr; i >= 0; i-=4) {
+        uint word = computer->memory()->ReadWord(addr + i);
+
+        QString line = QString("0x%1  ").arg(addr + i, 8, 16, QChar('0'));
+        line.append(QString("0x%1").arg(word, 8, 16, QChar('0')));
+        new QListWidgetItem(line, ui->listWidget_stack);
+    }
+}
+
+void ArmSim::on_pushButton_clicked()
+{
+    filepath = QFileDialog::getOpenFileName(
+                this,
+                tr("Load File"),
+                QDir::currentPath(),
+                ".exe Files (*.exe);;All Files (*.*)"
+                );
+    if(!filepath.isEmpty()) {
+        loadFile(filepath);
+        updateDisplay();
+    }
+}
+
+void ArmSim::on_pushButton_reset_clicked()
+{
+    // if a file has already been loaded
+    if(!filepath.isEmpty()) {
+        loadFile(filepath);
+        updateDisplay();
+    }
+}
+
+void ArmSim::on_pushButton_step_clicked()
+{
+    // cannot step after the last instruction
+    if(regs->get(15)+4 < RAM->addr_space()) {
+        computer->step();
+        updateDisplay();
+    }
+}
+
+
+//TODO: change run icon to runing... symbol
+void ArmSim::on_pushButton_run_clicked()
+{
+    if(!filepath.isEmpty()) {
+        ui->pushButton_run->setIcon(QIcon(":/icons/running.png"));
+        computer->setRunning(true);
+        RunThread *thread = new RunThread(computer);
+        connect(thread, &QThread::finished, this, &ArmSim::threadEnded);
+        thread->start();
+    }
+}
+
+void ArmSim::threadEnded()
+{
+    //cout << "thread ended" <<  endl;
+    computer->setRunning(false);
+    ui->pushButton_run->setIcon(QIcon(":/icons/run.png"));
+    updateDisplay();
+}
+
+void ArmSim::on_lineEdit_memory_returnPressed()
+{
+    if(!filepath.isEmpty() && !ui->lineEdit_memory->text().isEmpty()) {
+        updateMemoryPanel();
+    }
+    else {
+        QMessageBox msgBox;
+        QFont f("Segoe UI", 12);
+        msgBox.setFont(f);
+        msgBox.setText("Load a file into memory.");
+        msgBox.setWindowTitle("Error");
+        msgBox.exec();
+    }
+}
+
+void ArmSim::on_pushButton_stop_clicked()
+{
+    // turn off the computer's running flag
+    computer->setRunning(false);
+    //updateDisplay();
+}
+
+void ArmSim::on_checkBox_trace_clicked()
+{
+    if (ui->checkBox_trace->isChecked()) {
+        computer->getTracingStream()->open("trace.log");
+        computer->setTracing(true);
+    }
+    else {
+        computer->getTracingStream()->close();
+        computer->setTracing(false);
+    }
+
+    //cout << computer->getTracing() << endl;
+}

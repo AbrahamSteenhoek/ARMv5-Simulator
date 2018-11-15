@@ -1,0 +1,56 @@
+/*----------------------------------------------------------------------------/
+ * Abraham Steenhoek | class: CPS310 | login: astee529 | BJUID: 160520
+ *
+ * computer.h
+ *  Contains the declarations of the methods declared in 'computer.h'
+ * --------------------------------------------------------------------------*/
+
+#include "memory.h"
+#include "cpu.h"
+#include "options.h"
+#include "loader.h"
+
+#ifndef COMPUTER_H
+#define COMPUTER_H
+
+
+class Computer
+{
+    CPU *cpu;
+    Memory *RAM;
+    // something here for regs
+    RegisterBank* regs;
+
+    // flags for running and tracing options
+    bool running;
+    bool tracing;
+
+    // list of breakpoint addresses
+
+    // number of fetch-decode-execute cycles since last load/reset
+    int step_number;
+
+    // stream to print trace to
+    ofstream *traceStream;
+
+public:
+    Computer(Options *_opts);
+    void run();
+    void step();
+
+    void setRunning(bool flag) { running = flag; }
+    void setTracing(bool flag) { tracing = flag; }
+    bool getTracing() { return tracing; }
+    void setTracingStream(ofstream *strm) { traceStream = strm; }
+    int getStep_number() { return step_number; }
+    ofstream* getTracingStream() { return traceStream; }
+
+    void traceLine();
+
+    RegisterBank* registers(){ return regs; }
+    Memory* memory() { return RAM; }
+    void setCPU(CPU* _cpu) { cpu = _cpu; }
+    void clearMemory();
+};
+
+#endif // COMPUTER_H
